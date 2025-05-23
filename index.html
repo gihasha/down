@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DownLanka - Download Videos Without Watermark</title>
+    <style>
+        :root {
+            --fb-color: #1877f2;
+            --yt-color: #ff0000;
+            --tt-color: #25f4ee;
+            --mod-color: #4CAF50;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-dark: #333;
+            --text-light: #666;
+        }
+
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
+            padding: 15px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-left: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Main Content Styles */
+        .main {
+            margin-top: 100px;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .description {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        /* Tabbed Interface */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 25px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab-btn.active {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        #fb-tab {
+            background: var(--fb-color);
+        }
+
+        #yt-tab {
+            background: var(--yt-color);
+        }
+
+        #tt-tab {
+            background: var(--tt-color);
+            color: #000;
+        }
+
+        #mod-tab {
+            background: var(--mod-color);
+        }
+
+        /* Downloader Sections */
+        .downloader-section {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-bottom: 40px;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .downloader-section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            border-radius: 3px;
+        }
+
+        #fb-downloader .section-title::after {
+            background: var(--fb-color);
+        }
+
+        #yt-downloader .section-title::after {
+            background: var(--yt-color);
+        }
+
+        #tt-downloader .section-title::after {
+            background: var(--tt-color);
+        }
+
+        #mod-downloader .section-title::after {
+            background: var(--mod-color);
+        }
+
+        /* Input Group */
+        .input-group {
+            display: flex;
+            margin-bottom: 25px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #eee;
+            border-radius: 50px 0 0 50px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #9d50bb;
+        }
+
+        .input-group button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 0 50px 50px 0;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        #fb-downloader .input-group button {
+            background: var(--fb-color);
+        }
+
+        #yt-downloader .input-group button {
+            background: var(--yt-color);
+        }
+
+        #tt-downloader .input-group button {
+            background: var(--tt-color);
+            color: #000;
+        }
+
+        #mod-downloader .input-group button {
+            background: var(--mod-color);
+        }
+
+        .input-group button:hover {
+            filter: brightness(1.1);
+        }
+
+        /* Loading Animation */
+        .loading {
+            text-align: center;
+            margin: 30px 0;
+            display: none;
+        }
+
+        .loading-spinner {
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 5px solid #9d50bb;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.1rem;
+            color: var(--text-light);
+        }
+
+        /* Result Section */
+        .result {
+            display: none;
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .video-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .video-info {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .video-thumbnail {
+                margin-right: 30px;
+                margin-bottom: 0;
+            }
+        }
+
+        .video-details {
+            flex: 1;
+        }
+
+        .video-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+
+        .video-desc {
+            font-size: 1rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Download Options */
+        .download-options {
+            margin-top: 30px;
+        }
+
+        .options-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            text-align: center;
+            color: var(--text-dark);
+        }
+
+        .quality-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .quality-option {
+            display: inline-block;
+        }
+
+        .quality-option button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+
+        #fb-downloader .quality-option button {
+            background: var(--fb-color);
+        }
+
+        #yt-downloader .quality-option button {
+            background: var(--yt-color);
+        }
+
+        #tt-downloader .quality-option button {
+            background: var(--tt-color);
+            color: #000;
+        }
+
+        #mod-downloader .quality-option button {
+            background: var(--mod-color);
+        }
+
+        .quality-option button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Footer Styles */
+        footer {
+            background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .footer-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .footer-description {
+            font-size: 1rem;
+            max-width: 800px;
+            margin: 0 auto 25px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        /* Pulse Animation for Buttons */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo">DownLanka</div>
+    </header>
+    
+    <div class="container">
+        <main class="main">
+            <h1 class="title">Download Videos Without Watermark</h1>
+            <p class="description">High quality downloads from Facebook, YouTube, TikTok, and MOD APKs</p>
+            
+            <!-- Tab Buttons -->
+            <div class="tabs">
+                <button id="fb-tab" class="tab-btn active" onclick="showTab('fb')">
+                    <i class="fab fa-facebook"></i> Facebook
+                </button>
+                <button id="yt-tab" class="tab-btn" onclick="showTab('yt')">
+                    <i class="fab fa-youtube"></i> YouTube
+                </button>
+                <button id="tt-tab" class="tab-btn" onclick="showTab('tt')">
+                    <i class="fab fa-tiktok"></i> TikTok
+                </button>
+                <button id="mod-tab" class="tab-btn" onclick="showTab('mod')">
+                    <i class="fas fa-cube"></i> MOD APK
+                </button>
+            </div>
+            
+            <!-- Facebook Downloader -->
+            <div id="fb-downloader" class="downloader-section active">
+                <h2 class="section-title">Facebook Video Downloader</h2>
+                <div class="input-group">
+                    <input type="text" id="fb-url" placeholder="Paste Facebook video URL here...">
+                    <button onclick="downloadFB()" class="pulse">Download</button>
+                </div>
+                
+                <div class="loading" id="fb-loading">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Searching for your video...</p>
+                </div>
+                
+                <div class="result" id="fb-result">
+                    <div class="video-info">
+                        <img id="fb-thumbnail" class="video-thumbnail" src="" alt="Video Thumbnail">
+                        <div class="video-details">
+                            <h3 id="fb-title" class="video-title">Video Title</h3>
+                            <p id="fb-desc" class="video-desc">Video description will appear here...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="download-options">
+                        <h3 class="options-title">Download Options</h3>
+                        <div class="quality-options">
+                            <div class="quality-option">
+                                <button onclick="downloadVideo('fb-sd')">SD Quality</button>
+                            </div>
+                            <div class="quality-option">
+                                <button onclick="downloadVideo('fb-hd')">HD Quality</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- YouTube Downloader -->
+            <div id="yt-downloader" class="downloader-section">
+                <h2 class="section-title">YouTube Video Downloader</h2>
+                <div class="input-group">
+                    <input type="text" id="yt-url" placeholder="Paste YouTube video URL here...">
+                    <button onclick="downloadYT()" class="pulse">Download</button>
+                </div>
+                
+                <div class="loading" id="yt-loading">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Searching for your video...</p>
+                </div>
+                
+                <div class="result" id="yt-result">
+                    <div class="video-info">
+                        <img id="yt-thumbnail" class="video-thumbnail" src="" alt="Video Thumbnail">
+                        <div class="video-details">
+                            <h3 id="yt-title" class="video-title">Video Title</h3>
+                            <p id="yt-desc" class="video-desc">Video description will appear here...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="download-options">
+                        <h3 class="options-title">Video Quality</h3>
+                        <div id="yt-video-options" class="quality-options"></div>
+                        
+                        <h3 class="options-title">Audio Only (MP3)</h3>
+                        <div id="yt-audio-options" class="quality-options"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- TikTok Downloader -->
+            <div id="tt-downloader" class="downloader-section">
+                <h2 class="section-title">TikTok Video Downloader</h2>
+                <div class="input-group">
+                    <input type="text" id="tt-url" placeholder="Paste TikTok video URL here...">
+                    <button onclick="downloadTT()" class="pulse">Download</button>
+                </div>
+                
+                <div class="loading" id="tt-loading">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Searching for your video...</p>
+                </div>
+                
+                <div class="result" id="tt-result">
+                    <div class="video-info">
+                        <img id="tt-thumbnail" class="video-thumbnail" src="" alt="Video Thumbnail">
+                        <div class="video-details">
+                            <h3 id="tt-title" class="video-title">Video Title</h3>
+                            <p id="tt-caption" class="video-desc">Video caption will appear here...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="download-options">
+                        <h3 class="options-title">Download Options</h3>
+                        <div class="quality-options">
+                            <div class="quality-option">
+                                <button onclick="downloadVideo('tt-nowm')">No Watermark</button>
+                            </div>
+                            <div class="quality-option">
+                                <button onclick="downloadVideo('tt-mp3')">MP3 Audio</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- MOD Downloader -->
+            <div id="mod-downloader" class="downloader-section">
+                <h2 class="section-title">MOD APK Downloader</h2>
+                <div class="input-group">
+                    <input type="text" id="mod-search" placeholder="Search for MOD APK (e.g., WhatsApp Mod)">
+                    <button onclick="searchMOD()" class="pulse">Search</button>
+                </div>
+                
+                <div class="loading" id="mod-loading">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Searching for MOD APKs...</p>
+                </div>
+                
+                <div class="result" id="mod-result">
+                    <div class="video-info">
+                        <div class="video-details">
+                            <h3 id="mod-title" class="video-title">MOD APK Name</h3>
+                            <p id="mod-version" class="video-desc">Version: Loading...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="download-options">
+                        <h3 class="options-title">Download Links</h3>
+                        <div id="mod-dl-options" class="quality-options"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <h2 class="footer-title">DownLanka</h2>
+            <p class="footer-description">
+                The fastest way to download videos from social media without watermarks. 
+                Our service supports Facebook, YouTube, TikTok, and provides MOD APKs 
+                for popular applications.
+            </p>
+            <p class="copyright">© 2023 DownLanka. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Font Awesome for Icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    
+    <script>
+        // Show selected tab
+        function showTab(type) {
+            // Hide all sections
+            document.querySelectorAll('.downloader-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(`${type}-downloader`).classList.add('active');
+            
+            // Add active class to clicked tab
+            document.getElementById(`${type}-tab`).classList.add('active');
+        }
+        
+        // Facebook Downloader
+        function downloadFB() {
+            const url = document.getElementById('fb-url').value;
+            if (!url) return alert('Please enter a Facebook video URL');
+            
+            // Show loading
+            document.getElementById('fb-loading').style.display = 'block';
+            document.getElementById('fb-result').style.display = 'none';
+            
+            // Simulate API call (replace with actual API call)
+            setTimeout(() => {
+                // Sample response (replace with actual API response)
+                const response = {
+                    status: true,
+                    creator: "@VajiraTech",
+                    result: {
+                        thumb: "https://scontent-sjc3-1.xx.fbcdn.net/v/t15.5256-10/462407008_1026334649237023_628734555069432092_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=a27664&_nc_ohc=Y2EIdSqCTDwQ7kNvwHcug4l&_nc_oc=AdkN7xU0RjJwHAyTjfU118o1QN7T2xaiZ9wErsVY1EJDtXaYmV14GsnTuhU0kEruLUw&_nc_zt=23&_nc_ht=scontent-sjc3-1.xx&nc_gid=yAC9VdVfuW5va2oLUk3XMg&oh=00_AfKqhB9VYnN2NpCDJ_4PFWtCucwNCIAwghPYDVnDLs2l3g&oe=68362529",
+                        title: "Amazing Beach Sunset",
+                        desc: "Beautiful sunset at Negombo beach with friends. #sunset #beach #srilanka",
+                        sd: "https://example.com/video-sd.mp4",
+                        hd: "https://example.com/video-hd.mp4"
+                    }
+                };
+                
+                // Update UI
+                document.getElementById('fb-thumbnail').src = response.result.thumb;
+                document.getElementById('fb-title').textContent = response.result.title;
+                document.getElementById('fb-desc').textContent = response.result.desc;
+                
+                // Store download URLs
+                document.getElementById('fb-sd').dataset.url = response.result.sd;
+                document.getElementById('fb-hd').dataset.url = response.result.hd;
+                
+                // Hide loading, show result
+                document.getElementById('fb-loading').style.display = 'none';
+                document.getElementById('fb-result').style.display = 'block';
+            }, 1500);
+        }
+        
+        // YouTube Downloader
+        function downloadYT() {
+            const url = document.getElementById('yt-url').value;
+            if (!url) return alert('Please enter a YouTube video URL');
+            
+            // Show loading
+            document.getElementById('yt-loading').style.display = 'block';
+            document.getElementById('yt-result').style.display = 'none';
+            
+            // Simulate API call (replace with actual API call)
+            setTimeout(() => {
+                // Sample response (replace with actual API response)
+                const response = {
+                    status: true,
+                    creator: "@VajiraTech",
+                    result: {
+                        status: true,
+                        creator: "@vreden/youtube_scraper",
+                        metadata: {
+                            type: "video",
+                            videoId: "2WmBa1CviYE",
+                            url: "https://youtube.com/watch?v=2WmBa1CviYE",
+                            title: "Naughty Boy, Sam Smith - La la la (Lyrics)",
+                            description: "Lyrics: Naughty Boy - La la la ft. Sam Smith [Intro] Na na, la la la la la na na na na na La la na na, la la la la la na na na na ...",
+                            image: "https://i.ytimg.com/vi/2WmBa1CviYE/hq720.jpg",
+                            thumbnail: "https://i.ytimg.com/vi/2WmBa1CviYE/hq720.jpg",
+                            seconds: 251,
+                            timestamp: "4:11",
+                            duration: { seconds: 251, timestamp: "4:11" },
+                            ago: "5 years ago",
+                            views: 89661968,
+                            author: { name: "7clouds", url: "https://youtube.com/@7clouds" }
+                        },
+                        download: {
+                            status: true,
+                            quality: "360p",
+                            availableQuality: [144, 360, 480, 720, 1080],
+                            url: "https://cdn302.savetube.su/download-direct/video/360/f4f65e67d5916863d5b7a2604db1f50a355591dd",
+                            filename: "Naughty Boy, Sam Smith - La la la (Lyrics) (360p).mp4"
+                        }
+                    }
+                };
+                
+                // Update UI
+                document.getElementById('yt-thumbnail').src = response.result.metadata.image;
+                document.getElementById('yt-title').textContent = response.result.metadata.title;
+                document.getElementById('yt-desc').textContent = response.result.metadata.description;
+                
+                // Generate quality options
+                const videoOptions = document.getElementById('yt-video-options');
+                videoOptions.innerHTML = '';
+                
+                response.result.download.availableQuality.forEach(quality => {
+                    const option = document.createElement('div');
+                    option.className = 'quality-option';
+                    option.innerHTML = `<button onclick="downloadVideo('yt-${quality}p')">${quality}p</button>`;
+                    videoOptions.appendChild(option);
+                });
+                
+                // Audio options
+                const audioOptions = document.getElementById('yt-audio-options');
+                audioOptions.innerHTML = '';
+                
+                [92, 128, 256, 320].forEach(quality => {
+                    const option = document.createElement('div');
+                    option.className = 'quality-option';
+                    option.innerHTML = `<button onclick="downloadVideo('yt-mp3-${quality}kbps')">MP3 ${quality}kbps</button>`;
+                    audioOptions.appendChild(option);
+                });
+                
+                // Hide loading, show result
+                document.getElementById('yt-loading').style.display = 'none';
+                document.getElementById('yt-result').style.display = 'block';
+            }, 1500);
+        }
+        
+        // TikTok Downloader
+        function downloadTT() {
+            const url = document.getElementById('tt-url').value;
+            if (!url) return alert('Please enter a TikTok video URL');
+            
+            // Show loading
+            document.getElementById('tt-loading').style.display = 'block';
+            document.getElementById('tt-result').style.display = 'none';
+            
+            // Simulate API call (replace with actual API call)
+            setTimeout(() => {
+                // Sample response (replace with actual API response)
+                const response = {
+                    status: true,
+                    creator: "@VajiraTech",
+                    result: {
+                        title: "Sri Lankan Beach Vibes",
+                        caption: "Enjoying the sunset at Unawatuna beach #srilanka #beach #sunset",
+                        nowm: "https://tikcdn.io/tiktokdownload/7263749907935284485",
+                        mp3: "https://tikcdn.io/tiktokdownload/aHR0cHM6Ly9zZjE2LWllcy1tdXNpYy12YS50aWt0b2tjZG4uY29tL29iai9tdXNpY2FsbHktbWFsaXZhLW9iai83MjYzNzQ5OTYwOTQwOTY0NjE0Lm1wMw==",
+                        thumbnail: "https://tikcdn.io/tiktokdownload/a/aHR0cHM6Ly9wMTYtY29tbW9uLXZhLnRpa3Rva2Nkbi11cy5jb20vdG9zLW1hbGl2YS1hdnQtMDA2OC80ZjM3Nzc0NTEwNzFjYzc3OWJiMGI0NzY5MTc4Y2Y3ZX50cGx2LXRpa3Rva3gtY3JvcGNlbnRlci1xOjEwMDoxMDA6cTc1LndlYnA/ZHI9ODgzNSZpZGM9dXNlYXN0NSZub25jZT03OTExNSZwcz04N2Q2ZTQ4YSZyZWZyZXNoX3Rva2VuPWU2YjNmYzk4MWUzNmY1MWViMzRmN2ZiMGY5YjVkMjljJnM9QVdFTUVfREVUQUlMJnNjPWF2YXRhciZzaGNwPTFkMWE5N2ZjJnNocD00NTEyNjIxNyZ0PTIyMzQ0OWM0"
+                    }
+                };
+                
+                // Update UI
+                document.getElementById('tt-thumbnail').src = response.result.thumbnail;
+                document.getElementById('tt-title').textContent = response.result.title;
+                document.getElementById('tt-caption').textContent = response.result.caption;
+                
+                // Store download URLs
+                document.getElementById('tt-nowm').dataset.url = response.result.nowm;
+                document.getElementById('tt-mp3').dataset.url = response.result.mp3;
+                
+                // Hide loading, show result
+                document.getElementById('tt-loading').style.display = 'none';
+                document.getElementById('tt-result').style.display = 'block';
+            }, 1500);
+        }
+        
+        // MOD Downloader
+        function searchMOD() {
+            const query = document.getElementById('mod-search').value;
+            if (!query) return alert('Please enter a search term');
+            
+            // Show loading
+            document.getElementById('mod-loading').style.display = 'block';
+            document.getElementById('mod-result').style.display = 'none';
+            
+            // Simulate API call (replace with actual API call)
+            setTimeout(() => {
+                // Sample response (replace with actual API response)
+                const response = {
+                    status: true,
+                    creator: "@VajiraTech",
+                    result: {
+                        Search: {
+                            title: "WhatsApp Mod APK Latest & Official",
+                            version: "2.23.10.76",
+                            date: "2023-05-15"
+                        },
+                        dlsearch: [
+                            { name: "WhatsApp Mod v2.23.10.76", url: "https://example.com/mod1.apk" },
+                            { name: "WhatsApp Mod v2.23.9.75", url: "https://example.com/mod2.apk" }
+                        ]
+                    }
+                };
+                
+                // Update UI
+                document.getElementById('mod-title').textContent = response.result.Search.title;
+                document.getElementById('mod-version').textContent = `Version: ${response.result.Search.version} | Date: ${response.result.Search.date}`;
+                
+                // Generate download options
+                const dlOptions = document.getElementById('mod-dl-options');
+                dlOptions.innerHTML = '';
+                
+                response.result.dlsearch.forEach(mod => {
+                    const option = document.createElement('div');
+                    option.className = 'quality-option';
+                    option.innerHTML = `<button onclick="downloadVideo('mod-${mod.name.replace(/\s+/g, '-')}')">${mod.name}</button>`;
+                    dlOptions.appendChild(option);
+                });
+                
+                // Hide loading, show result
+                document.getElementById('mod-loading').style.display = 'none';
+                document.getElementById('mod-result').style.display = 'block';
+            }, 1500);
+        }
+        
+        // Download video function
+        function downloadVideo(type) {
+            let url = '';
+            let filename = 'download';
+            
+            // Get URL based on type
+            switch(type) {
+                case 'fb-sd':
+                    url = document.getElementById('fb-sd').dataset.url;
+                    filename = 'facebook-video-sd.mp4';
+                    break;
+                case 'fb-hd':
+                    url = document.getElementById('fb-hd').dataset.url;
+                    filename = 'facebook-video-hd.mp4';
+                    break;
+                case 'tt-nowm':
+                    url = document.getElementById('tt-nowm').dataset.url;
+                    filename = 'tiktok-video-nowm.mp4';
+                    break;
+                case 'tt-mp3':
+                    url = document.getElementById('tt-mp3').dataset.url;
+                    filename = 'tiktok-audio.mp3';
+                    break;
+                default:
+                    if (type.startsWith('yt-')) {
+                        // For YouTube, we would normally fetch the actual download URL
+                        url = `https://example.com/download/${type.replace('yt-', '')}`;
+                        filename = `youtube-${type.replace('yt-', '')}.${type.includes('mp3') ? 'mp3' : 'mp4'}`;
+                    } else if (type.startsWith('mod-')) {
+                        // For MODs, we would get the actual download URL
+                        url = `https://example.com/mod/${type.replace('mod-', '')}.apk`;
+                        filename = `${type.replace('mod-', '')}.apk`;
+                    }
+            }
+            
+            // Create a temporary link and trigger download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            // In a real app, you might want to track downloads or show a confirmation
+            console.log(`Downloading: ${filename}`);
+        }
+        
+        // Initialize with Facebook downloader shown
+        window.onload = function() {
+            showTab('fb');
+        };
+    </script>
+</body>
+</html>
