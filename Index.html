@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DownLanka - Premium Video Downloader</title>
+    <style>
+        :root {
+            --fb-color: #1877f2;
+            --yt-color: #ff0000;
+            --tt-color: #25f4ee;
+            --mod-color: #4CAF50;
+            --error-color: #ff4757;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-dark: #333;
+            --text-light: #666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
+            padding: 15px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-left: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Main Content */
+        .main {
+            margin-top: 100px;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .description {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        /* Service Buttons - Vertical Layout */
+        .service-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .service-btn {
+            width: 90%;
+            max-width: 400px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .service-btn:hover::before {
+            left: 100%;
+        }
+
+        .service-btn i {
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+
+        #fb-btn {
+            background: var(--fb-color);
+        }
+
+        #yt-btn {
+            background: var(--yt-color);
+        }
+
+        #tt-btn {
+            background: var(--tt-color);
+            color: #000;
+        }
+
+        #mod-btn {
+            background: var(--mod-color);
+        }
+
+        /* Downloader Sections */
+        .downloader-section {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-bottom: 40px;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .downloader-section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            border-radius: 3px;
+        }
+
+        #fb-downloader .section-title::after {
+            background: var(--fb-color);
+        }
+
+        #yt-downloader .section-title::after {
+            background: var(--yt-color);
+        }
+
+        #tt-downloader .section-title::after {
+            background: var(--tt-color);
+        }
+
+        #mod-downloader .section-title::after {
+            background: var(--mod-color);
+        }
+
+        /* Input Group */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 25px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .input-field {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+            padding-right: 50px;
+        }
+
+        .input-group input:focus {
+            border-color: #9d50bb;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .input-group button {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        #fb-downloader .input-group button {
+            background: var(--fb-color);
+        }
+
+        #yt-downloader .input-group button {
+            background: var(--yt-color);
+        }
+
+        #tt-downloader .input-group button {
+            background: var(--tt-color);
+            color: #000;
+        }
+
+        #mod-downloader .input-group button {
+            background: var(--mod-color);
+        }
+
+        .input-group button:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-group button:active {
+            transform: translateY(0);
+        }
+
+        /* Loading Animation */
+        .loading {
+            text-align: center;
+            margin: 30px 0;
+            display: none;
+        }
+
+        .loading-spinner {
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 5px solid #9d50bb;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.1rem;
+            color: var(--text-light);
+        }
+
+        /* Result Section */
+        .result {
+            display: none;
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .video-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .video-info {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .video-thumbnail {
+                margin-right: 30px;
+                margin-bottom: 0;
+            }
+        }
+
+        .video-details {
+            flex: 1;
+        }
+
+        .video-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+
+        .video-desc {
+            font-size: 1rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Quality Selection */
+        .quality-selection {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .quality-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+
+        .quality-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quality-btn {
+            padding: 8px 15px;
+            border: 2px solid #eee;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quality-btn:hover {
+            border-color: #9d50bb;
+        }
+
+        .quality-btn.selected {
+            background: #9d50bb;
+            color: white;
+            border-color: #9d50bb;
+        }
+
+        .download-btn {
+            padding: 12px 25px;
+            background: #9d50bb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: none;
+            margin-top: 15px;
+        }
+
+        .download-btn:hover {
+            background: #6e48aa;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .footer-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .footer-description {
+            font-size: 1rem;
+            max-width: 800px;
+            margin: 0 auto 25px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo">DownLanka</div>
+    </header>
+    
+    <div class="container">
+        <main class="main">
+            <h1 class="title">Premium Video Downloader</h1>
+            <p class="description">Download high-quality videos without watermarks from popular platforms</p>
+            
+            <!-- Vertical Service Buttons -->
+            <div class="service-buttons">
+                <button id="fb-btn" class="service-btn" onclick="showService('fb')">
+                    <i class="fab fa-facebook"></i> Facebook Downloader
+                </button>
+                <button id="yt-btn" class="service-btn" onclick="showService('yt')">
+                    <i class="fab fa-youtube"></i> YouTube Downloader
+                </button>
+                <button id="tt-btn" class="service-btn" onclick="showService('tt')">
+                    <i class="fab fa-tiktok"></i> TikTok Downloader
+                </button>
+                <button id="mod-btn" class="service-btn" onclick="showService('mod')">
+                    <i class="fas fa-cube"></i> MOD APK Downloader
+                </button>
+            </div>
+            
+            <!-- Facebook Downloader -->
+            <div id="fb-downloader" class="downloader-section active">
+                <h2 class="section-title">Facebook Video Downloader</h2>
+                <div class="input-group">
+                    <div class="input-field">
+                        <input type="text" id="fb-url" placeholder="Paste Facebook video URL here...">
+                        <div class="error-message" id="fb-error">Please enter a valid Facebook URL</div>
+                    </div>
+                    <button onclick="processFB()">Download Now</button>
+                </div>
+                
+                <div class="loading" id="fb-loading">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Searching for your video...</p>
+                </div>
+                
+                <div class="result" id="fb-result">
+                    <div class="video-info">
+                        <img id="fb-thumbnail" class="video-thumbnail" src="" alt="Video Thumbnail">
+                        <div class="video-details">
+                            <h3 id="fb-title" class="video-title">Video Title</h3>
+                            <p id="fb-desc" class="video-desc">Video description will appear here...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quality-selection" id="fb-quality">
+                        <h3 class="quality-title">Select Quality:</h3>
+                        <div class="quality-options">
+                            <button class="quality-btn" onclick="selectQuality(this, 'fb-sd')">SD Quality</button>
+                            <button class="quality-btn" onclick="selectQuality(this, 'fb-hd')">HD Quality</button>
+                        </div>
+                        <button class="download-btn" id="fb-download-btn" onclick="downloadNow('fb')">
+                            <i class="fas fa-download"></i> Download Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- YouTube Downloader -->
+            <div id="yt-downloader" class="downloader-section">
+                <h2 class="section-title">YouTube Video Downloader</h2>
+                <div class="input-group">
+                    <div class="input-field">
+                        <input type="text" id="yt-url" placeholder="Paste YouTube video URL here...">
+                        <div class="error-message" id="yt-error">Please enter a valid YouTube URL</div>
+                    </div>
+                    <button onclick="processYT()">Download Now</button>
+                </div>
+                
+                <div class="loading" id="yt-loading">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Searching for your video...</p>
+                </div>
+                
+                <div class="result" id="yt-result">
+                    <div class="video-info">
+                        <img id="yt-thumbnail" class="video-thumbnail" src="" alt="Video Thumbnail">
+                        <div class="video-details">
+                            <h3 id="yt-title" class="video-title">Video Title</h3>
+                            <p id="yt-desc" class="video-desc">Video description will appear here...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quality-selection" id="yt-quality">
+                        <h3 class="quality-title">Select Video Quality:</h3>
+                        <div id="yt-video-options" class="quality-options"></div>
+                        
+                        <h3 class="quality-title">Select Audio Quality (MP3):</h3>
+                        <div id="yt-audio-options" class="quality-options"></div>
+                        
+                        <button class="download-btn" id="yt-download-btn" onclick="downloadNow('yt')">
+                            <i class="fas fa-download"></i> Download Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- TikTok Downloader -->
+            <div id="tt-downloader" class="downloader-section">
+                <h2 class="section-title">TikTok Video Downloader</h2>
+                <div class="input-group">
+                    <div class="input-field">
+                        <input type="text" id="tt-url" placeholder="Paste TikTok video URL here...">
+                        <div class="error-message" id="tt-error">Please enter a valid TikTok URL</div>
+                    </div>
+                    <button onclick="processTT()">Download Now</button>
+                </div>
+                
+                <div class="loading" id="tt-loading">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Searching for your video...</p>
+                </div>
+                
+                <div class="result" id="tt-result">
+                    <div class="video-info">
+                        <img id="tt-thumbnail" class="video-thumbnail" src="" alt="Video Thumbnail">
+                        <div class="video-details">
+                            <h3 id="tt-title" class="video-title">Video Title</h3>
+                            <p id="tt-caption" class="video-desc">Video caption will appear here...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quality-selection" id="tt-quality">
+                        <h3 class="quality-title">Select Download Option:</h3>
+                        <div class="quality-options">
+                            <button class="quality-btn" onclick="selectQuality(this, 'tt-nowm')">No Watermark</button>
+                            <button class="quality-btn" onclick="selectQuality(this, 'tt-mp3')">MP3 Audio</button>
+                        </div>
+                        <button class="download-btn" id="tt-download-btn" onclick="downloadNow('tt')">
+                            <i class="fas fa-download"></i> Download Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- MOD Downloader -->
+            <div id="mod-downloader" class="downloader-section">
+                <h2 class="section-title">MOD APK Downloader</h2>
+                <div class="input-group">
+                    <div class="input-field">
+                        <input type="text" id="mod-search" placeholder="Search for MOD APK (e.g., WhatsApp Mod)">
+                        <div class="error-message" id="mod-error">Please enter a search term</div>
+                    </div>
+                    <button onclick="processMOD()">Search MODs</button>
+                </div>
+                
+                <div class="loading" id="mod-loading">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Searching for MOD APKs...</p>
+                </div>
+                
+                <div class="result" id="mod-result">
+                    <div class="video-info">
+                        <div class="video-details">
+                            <h3 id="mod-title" class="video-title">MOD APK Name</h3>
+                            <p id="mod-version" class="video-desc">Version: Loading...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quality-selection" id="mod-quality">
+                        <h3 class="quality-title">Available Downloads:</h3>
+                        <div id="mod-dl-options" class="quality-options"></div>
+                        <button class="download-btn" id="mod-download-btn" onclick="downloadNow('mod')" style="display: none;">
+                            <i class="fas fa-download"></i> Download Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <h2 class="footer-title">DownLanka</h2>
+            <p class="footer-description">
+                The most advanced video downloader for social media platforms. 
+                Download without watermarks in HD quality with just one click!
+            </p>
+            <p class="copyright">© 2025 DownLanka. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Current selected service
+        let currentService = 'fb';
+        let selectedQuality = '';
+        
+        // Show selected service
+        function showService(type) {
+            currentService = type;
+            
+            // Hide all sections
+            document.querySelectorAll('.downloader-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(`${type}-downloader`).classList.add('active');
+            
+            // Reset all results
+            resetAllResults();
+        }
+        
+        // Process Facebook URL
+        function processFB() {
+            const url = document.getElementById('fb-url').value;
+            const errorElement = document.getElementById('fb-error');
+            
+            if (!url || !url.includes('facebook.com')) {
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            errorElement.style.display = 'none';
+            
+            // Show loading
+            document.getElementById('fb-loading').style.display = 'block';
+            document.getElementById('fb-result').style.display = 'none';
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Sample response
+                const response = {
+                    status: true,
+                    result: {
+                        thumb: "https://example.com/thumb.jpg",
+                        title: "Beautiful Sri Lanka Beaches",
+                        desc: "Amazing beach views from Unawatuna, Sri Lanka",
+                        sd: "https://example.com/video-sd.mp4",
+                        hd: "https://example.com/video-hd.mp4"
+                    }
+                };
+                
+                // Update UI
+                document.getElementById('fb-thumbnail').src = response.result.thumb;
+                document.getElementById('fb-title').textContent = response.result.title;
+                document.getElementById('fb-desc').textContent = response.result.desc;
+                
+                // Hide loading, show result and quality selection
+                document.getElementById('fb-loading').style.display = 'none';
+                document.getElementById('fb-result').style.display = 'block';
+                document.getElementById('fb-quality').style.display = 'block';
+            }, 1500);
+        }
+        
+        // Process YouTube URL
+        function processYT() {
+            const url = document.getElementById('yt-url').value;
+            const errorElement = document.getElementById('yt-error');
+            
+            if (!url || !url.includes('youtube.com')) {
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            errorElement.style.display = 'none';
+            
+            // Show loading
+            document.getElementById('yt-loading').style.display = 'block';
+            document.getElementById('yt-result').style.display = 'none';
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Sample response
+                const response = {
+                    status: true,
+                    result: {
+                        metadata: {
+                            title: "Sri Lanka Travel Guide",
+                            description: "Best places to visit in Sri Lanka",
+                            image: "https://example.com/yt-thumb.jpg"
+                        },
+                        download: {
+                            availableQuality: [144, 360, 480, 720, 1080]
+                        }
+                    }
+                };
+                
+                // Update UI
+                document.getElementById('yt-thumbnail').src = response.result.metadata.image;
+                document.getElementById('yt-title').textContent = response.result.metadata.title;
+                document.getElementById('yt-desc').textContent = response.result.metadata.description;
+                
+                // Generate quality options
+                const videoOptions = document.getElementById('yt-video-options');
+                videoOptions.innerHTML = '';
+                
+                response.result.download.availableQuality.forEach(quality => {
+                    const option = document.createElement('button');
+                    option.className = 'quality-btn';
+                    option.textContent = `${quality}p`;
+                    option.onclick = function() { selectQuality(this, `yt-${quality}p`); };
+                    videoOptions.appendChild(option);
+                });
+                
+                // Audio options
+                const audioOptions = document.getElementById('yt-audio-options');
+                audioOptions.innerHTML = '';
+                
+                [92, 128, 256, 320].forEach(quality => {
+                    const option = document.createElement('button');
+                    option.className = 'quality-btn';
+                    option.textContent = `MP3 ${quality}kbps`;
+                    option.onclick = function() { selectQuality(this, `yt-mp3-${quality}kbps`); };
+                    audioOptions.appendChild(option);
+                });
+                
+                // Hide loading, show result and quality selection
+                document.getElementById('yt-loading').style.display = 'none';
+                document.getElementById('yt-result').style.display = 'block';
+                document.getElementById('yt-quality').style.display = 'block';
+            }, 1500);
+        }
+        
+        // Process TikTok URL
+        function processTT() {
+            const url = document.getElementById('tt-url').value;
+            const errorElement = document.getElementById('tt-error');
+            
+            if (!url || !url.includes('tiktok.com')) {
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            errorElement.style.display = 'none';
+            
+            // Show loading
+            document.getElementById('tt-loading').style.display = 'block';
+            document.getElementById('tt-result').style.display = 'none';
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Sample response
+                const response = {
+                    status: true,
+                    result: {
+                        title: "Sri Lankan Street Food",
+                        caption: "Trying delicious kottu roti in Colombo #srilanka #food",
+                        thumbnail: "https://example.com/tt-thumb.jpg",
+                        nowm: "https://example.com/video-nowm.mp4",
+                        mp3: "https://example.com/audio.mp3"
+                    }
+                };
+                
+                // Update UI
+                document.getElementById('tt-thumbnail').src = response.result.thumbnail;
+                document.getElementById('tt-title').textContent = response.result.title;
+                document.getElementById('tt-caption').textContent = response.result.caption;
+                
+                // Hide loading, show result and quality selection
+                document.getElementById('tt-loading').style.display = 'none';
+                document.getElementById('tt-result').style.display = 'block';
+                document.getElementById('tt-quality').style.display = 'block';
+            }, 1500);
+        }
+        
+        // Process MOD Search
+        function processMOD() {
+            const query = document.getElementById('mod-search').value;
+            const errorElement = document.getElementById('mod-error');
+            
+            if (!query) {
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            errorElement.style.display = 'none';
+            
+            // Show loading
+            document.getElementById('mod-loading').style.display = 'block';
+            document.getElementById('mod-result').style.display = 'none';
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Sample response
+                const response = {
+                    status: true,
+                    result: {
+                        Search: {
+                            title: "WhatsApp MOD Premium",
+                            version: "2.23.10.76",
+                            date: "2023-05-15"
+                        },
+                        dlsearch: [
+                            { name: "WhatsApp MOD v2.23.10.76", url: "https://example.com/mod1.apk" },
+                            { name: "WhatsApp MOD v2.23.9.75", url: "https://example.com/mod2.apk" }
+                        ]
+                    }
+                };
+                
+                // Update UI
+                document.getElementById('mod-title').textContent = response.result.Search.title;
+                document.getElementById('mod-version').textContent = `Version: ${response.result.Search.version} | Date: ${response.result.Search.date}`;
+                
+                // Generate download options
+                const dlOptions = document.getElementById('mod-dl-options');
+                dlOptions.innerHTML = '';
+                
+                response.result.dlsearch.forEach(mod => {
+                    const option = document.createElement('button');
+                    option.className = 'quality-btn';
+                    option.textContent = mod.name;
+                    option.onclick = function() { 
+                        selectQuality(this, `mod-${mod.name.replace(/\s+/g, '-')}`);
+                        document.getElementById('mod-download-btn').dataset.url = mod.url;
+                    };
+                    dlOptions.appendChild(option);
+                });
+                
+                // Hide loading, show result and quality selection
+                document.getElementById('mod-loading').style.display = 'none';
+                document.getElementById('mod-result').style.display = 'block';
+                document.getElementById('mod-quality').style.display = 'block';
+            }, 1500);
+        }
+        
+        // Select quality option
+        function selectQuality(element, quality) {
+            // Remove selected class from all buttons
+            const buttons = element.parentElement.querySelectorAll('.quality-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked button
+            element.classList.add('selected');
+            
+            // Store selected quality
+            selectedQuality = quality;
+            
+            // Show download button
+            const service = currentService;
+            document.getElementById(`${service}-download-btn`).style.display = 'inline-block';
+        }
+        
+        // Download now function
+        function downloadNow(service) {
+            if (!selectedQuality) return;
+            
+            let url = '';
+            let filename = 'download';
+            
+            // Get URL based on service and quality
+            switch(selectedQuality) {
+                case 'fb-sd':
+                    url = 'https://example.com/video-sd.mp4';
+                    filename = 'facebook-video-sd.mp4';
+                    break;
+                case 'fb-hd':
+                    url = 'https://example.com/video-hd.mp4';
+                    filename = 'facebook-video-hd.mp4';
+                    break;
+                case 'tt-nowm':
+                    url = 'https://example.com/video-nowm.mp4';
+                    filename = 'tiktok-no-watermark.mp4';
+                    break;
+                case 'tt-mp3':
+                    url = 'https://example.com/audio.mp3';
+                    filename = 'tiktok-audio.mp3';
+                    break;
+                case 'mod-whatsapp-mod-v2.23.10.76':
+                    url = document.getElementById('mod-download-btn').dataset.url;
+                    filename = 'whatsapp-mod.apk';
+                    break;
+                default:
+                    if (selectedQuality.startsWith('yt-')) {
+                        url = `https://example.com/download/${selectedQuality.replace('yt-', '')}`;
+                        filename = `youtube-${selectedQuality.replace('yt-', '')}.${selectedQuality.includes('mp3') ? 'mp3' : 'mp4'}`;
+                    }
+            }
+            
+            // Create temporary link and trigger download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        
+        // Reset all results
+        function resetAllResults() {
+            document.querySelectorAll('.result').forEach(result => {
+                result.style.display = 'none';
+            });
+            document.querySelectorAll('.quality-selection').forEach(selection => {
+                selection.style.display = 'none';
+            });
+            document.querySelectorAll('.download-btn').forEach(btn => {
+                btn.style.display = 'none';
+            });
+            document.querySelectorAll('.quality-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            selectedQuality = '';
+        }
+        
+        // Initialize with Facebook downloader
+        window.onload = function() {
+            showService('fb');
+        };
+    </script>
+</body>
+</html>
